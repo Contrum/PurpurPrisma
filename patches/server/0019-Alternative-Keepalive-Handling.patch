@@ -5,10 +5,10 @@ Subject: [PATCH] Alternative Keepalive Handling
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index b66d4047b5e529f5f737efb0ff1edda805de1316..e7075e0c59fe99229142ecb518fadc5b481886fb 100644
+index 0b661bbfa4279cbb26c065c3ed4f2b9eb4342c4e..87e904ef07cf04d7e59c8da418c5d0458902de2d 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -74,6 +74,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -79,6 +79,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      private long keepAliveChallenge;
      private long closedListenerTime;
      private boolean closed = false;
@@ -16,7 +16,7 @@ index b66d4047b5e529f5f737efb0ff1edda805de1316..e7075e0c59fe99229142ecb518fadc5b
      private int latency;
      private volatile boolean suspendFlushingOnServerThread = false;
      public final java.util.Map<java.util.UUID, net.kyori.adventure.resource.ResourcePackCallback> packCallbacks = new java.util.concurrent.ConcurrentHashMap<>(); // Paper - adventure resource pack callbacks
-@@ -125,6 +126,16 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -130,6 +131,16 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
  
      @Override
      public void handleKeepAlive(ServerboundKeepAlivePacket packet) {
@@ -33,7 +33,7 @@ index b66d4047b5e529f5f737efb0ff1edda805de1316..e7075e0c59fe99229142ecb518fadc5b
          //PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel()); // CraftBukkit // Paper - handle ServerboundKeepAlivePacket async
          if (this.keepAlivePending && packet.getId() == this.keepAliveChallenge) {
              int i = (int) (Util.getMillis() - this.keepAliveTime);
-@@ -261,6 +272,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -262,6 +273,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          long currentTime = Util.getMillis();
          long elapsedTime = currentTime - this.keepAliveTime;
  
@@ -56,7 +56,7 @@ index b66d4047b5e529f5f737efb0ff1edda805de1316..e7075e0c59fe99229142ecb518fadc5b
              if (this.keepAlivePending && !this.processedDisconnect && elapsedTime >= KEEPALIVE_LIMIT) { // Paper - check keepalive limit, don't fire if already disconnected
                  this.disconnect(ServerCommonPacketListenerImpl.TIMEOUT_DISCONNECTION_MESSAGE, PlayerKickEvent.Cause.TIMEOUT); // Paper - kick event cause
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 9e6bcdaa2b3dabb2a7c50034eed81f0064a2f98f..4ddeff1d34f5e3f7f9c6cfe1c517be0e2d57f86f 100644
+index b4d43c293084b808d167dd02f2d6cf865ac17983..6bbd0021032d1979fc0133f6f859dddcf22c5708 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -200,6 +200,11 @@ public class PurpurConfig {

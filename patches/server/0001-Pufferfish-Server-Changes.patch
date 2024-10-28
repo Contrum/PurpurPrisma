@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 5e68a68d1ff920eb743795ae2048064a244a761c..ca4b66e690f69d2b815dcde3839ec14da6bd78a3 100644
+index de0474b8dce58cb419c00b7614d7dd66be832a02..6cfa3f9994de36e135658841aa3c091b90a14424 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -45,8 +45,8 @@ index 5e68a68d1ff920eb743795ae2048064a244a761c..ca4b66e690f69d2b815dcde3839ec14d
 +
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-     testImplementation("org.hamcrest:hamcrest:2.2")
-@@ -71,6 +78,14 @@ paperweight {
+     testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
+@@ -72,6 +79,14 @@ paperweight {
      craftBukkitPackageVersion.set("v1_21_R1") // also needs to be updated in MappingEnvironment
  }
  
@@ -61,7 +61,7 @@ index 5e68a68d1ff920eb743795ae2048064a244a761c..ca4b66e690f69d2b815dcde3839ec14d
  tasks.jar {
      archiveClassifier.set("dev")
  
-@@ -84,14 +99,14 @@ tasks.jar {
+@@ -85,14 +100,14 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -1143,10 +1143,10 @@ index 0000000000000000000000000000000000000000..facd55463d44cb7e3d2ca6892982f549
 +	}
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 23ddd26af762c1cd7fb3920669abb96b3213ab37..30907b63234642a4e760ae865c4a91e3162e52f2 100644
+index 696d075ca2883f3c37e35f983c4d020e5db89d16..e63721261258dba60b1eef2eee011e0aa18b0fd2 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -323,6 +323,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -322,6 +322,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public volatile Thread shutdownThread; // Paper
      public volatile boolean abnormalExit = false; // Paper
      public static final long SERVER_INIT = System.nanoTime(); // Paper - Lag compensation
@@ -1154,7 +1154,7 @@ index 23ddd26af762c1cd7fb3920669abb96b3213ab37..30907b63234642a4e760ae865c4a91e3
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> serverFactory) {
          AtomicReference<S> atomicreference = new AtomicReference();
-@@ -1314,6 +1315,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1312,6 +1313,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  this.profiler.popPush("nextTickWait");
                  this.mayHaveDelayedTasks = true;
                  this.delayedTasksMaxNextTickTimeNanos = Math.max(Util.getNanos() + i, this.nextTickTimeNanos);
@@ -1167,7 +1167,7 @@ index 23ddd26af762c1cd7fb3920669abb96b3213ab37..30907b63234642a4e760ae865c4a91e3
                  this.startMeasuringTaskExecutionTime();
                  this.waitUntilNextTick();
                  this.finishMeasuringTaskExecutionTime();
-@@ -2577,6 +2584,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2575,6 +2582,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -1367,7 +1367,7 @@ index 8ea2f24695f5dad55e21f238b69442513e7a90c6..5a2f7f7cf79dcbb996574e18cad86ebb
                      this.wasOnGround = this.entity.onGround();
                      this.teleportDelay = 0;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c96f3dcd365bc140b1f4680ef6bd770c80f8eda1..67d4b15143358c8947a7102a325dad66967e73a6 100644
+index f9abf63e12ea930275121b470e4e4906cff0fc12..2a8ffcdd262ea73844500846c6401cdda7153d61 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -715,6 +715,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
@@ -1413,7 +1413,7 @@ index c96f3dcd365bc140b1f4680ef6bd770c80f8eda1..67d4b15143358c8947a7102a325dad66
  
              if (this.isRainingAt(blockposition)) {
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index fcccf989c25f0a259b160c4ff7873f7009e64d14..9422d8bd512555f54410391d55c4072474c1ae4e 100644
+index 064d52d4479727c6a32bf357be8da32d1760e7fc..8f2214008d76d00267152b5db0cf0fbdd3fbbfb7 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1157,6 +1157,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -1425,7 +1425,7 @@ index fcccf989c25f0a259b160c4ff7873f7009e64d14..9422d8bd512555f54410391d55c40724
          final io.papermc.paper.configuration.type.number.IntOr.Disabled pageMax = io.papermc.paper.configuration.GlobalConfiguration.get().itemValidation.bookSize.pageMax;
          if (!this.cserver.isPrimaryThread() && pageMax.enabled()) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index e0827d8bb3fa17d4f590a5342ff41a514f623e68..de5276b9ba5b3cd2f565714995e86edd4447c1ca 100644
+index 4b54d0ea31062972e68ee8fafe3cfaf68f65a5cd..8492421ed2186c0eab517a67f3140b9988f65250 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -429,6 +429,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -1451,7 +1451,7 @@ index e0827d8bb3fa17d4f590a5342ff41a514f623e68..de5276b9ba5b3cd2f565714995e86edd
          this.baseTick();
      }
  
-@@ -4448,16 +4457,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4452,16 +4461,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -1477,7 +1477,7 @@ index e0827d8bb3fa17d4f590a5342ff41a514f623e68..de5276b9ba5b3cd2f565714995e86edd
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4465,14 +4476,61 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4469,14 +4480,61 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -1545,7 +1545,7 @@ index e0827d8bb3fa17d4f590a5342ff41a514f623e68..de5276b9ba5b3cd2f565714995e86edd
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4494,9 +4552,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4498,9 +4556,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                                  // CraftBukkit end
                              }
                          }
@@ -1572,7 +1572,7 @@ index cb61462d4691a055a4b25f7b953609d8a154fdfe..f9440014ab2fe753c16b9383f5fffbb8
      private String descriptionId;
      @Nullable
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 9c9e2377f44b1f1bbd8bb0e8bc963a80f4f9ee68..9a246178b8ffe3571d54c6c4156a31c818467062 100644
+index 2aa6374cd4a96efd85899be8cd3172a8257bfe6b..5132e108df37ca97ba94b8b72c0ef292cbb2ec94 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -157,7 +157,6 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -2045,7 +2045,7 @@ index 6e66141dca61f777b354854b5d0bac2570b8bf3b..abf231e6099cda766d73e67f31234e9f
          return false;
      }
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
-index de64de5d1328d3e0826c9990eb7c7eca5088cb9c..245d3d1630a11b3527f20f1135ce29cfe22ff347 100644
+index 10ade433c083851d9ea4797c6ec618db122229f9..091ca20cc7e495dbff90f2fcaae51fb1b2bb33d5 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 @@ -52,6 +52,36 @@ public abstract class Projectile extends Entity implements TraceableEntity {
@@ -2154,7 +2154,7 @@ index 213ee4aa988dd4c2a5a7be99b1d13f67338e5209..8e46753af60aa9fd8e4b4c0f955f7a55
          if (input.ingredientCount() != this.ingredients.size()) {
              return false;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..d3cc65612c44f42ecae2e09b942438a03bc244bd 100644
+index 507671476c3d2d92a2fdb05be24443af27d26dcf..2479b47186202de40cdb4ae773c696a4adee9bad 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -1418,16 +1418,16 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -2177,7 +2177,7 @@ index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..d3cc65612c44f42ecae2e09b942438a0
      }
      // Paper start - Option to prevent armor stands from doing entity lookups
      @Override
-@@ -1944,6 +1944,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1961,6 +1961,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
  
      public ProfilerFiller getProfiler() {
@@ -2478,10 +2478,10 @@ index 96d772eb02f79f8c478f5e6f065e387aa7665b18..c5ce412f321b8b4f31cc042893659e21
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 7d32c032b63b9c4674489b30c845fe2de8275808..2a4ebb4ea67a630f3ab4d728304221f8f5614de1 100644
+index d06aab9bd5cd901c8367f9680f5d27ddb17b3dc4..8fa2b2a67891d34ec95f7eed2a4118ddd8a5be15 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -483,7 +483,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+@@ -489,7 +489,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
  
      @Override
      public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {

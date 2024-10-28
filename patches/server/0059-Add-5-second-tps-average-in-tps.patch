@@ -5,10 +5,18 @@ Subject: [PATCH] Add 5 second tps average in /tps
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/gui/RAMDetails.java b/src/main/java/com/destroystokyo/paper/gui/RAMDetails.java
-index 039a86034928a5eb7aaa2d7ca76a7bddcca346bd..308f67d0616e2d6bb135258f1fda53ccdee01430 100644
+index 12b327eea95e0de9e9c39b7d039badee8ec46508..849ecc5af70901f1e40cb6c419f33f1cf6f3b6be 100644
 --- a/src/main/java/com/destroystokyo/paper/gui/RAMDetails.java
 +++ b/src/main/java/com/destroystokyo/paper/gui/RAMDetails.java
-@@ -68,7 +68,7 @@ public class RAMDetails extends JList<String> {
+@@ -61,6 +61,7 @@ public class RAMDetails extends JList<String> {
+ 
+         // Follows CraftServer#getTPS
+         double[] tps = new double[] {
++            server.tps5s.getAverage(), // Purpur
+             server.tps1.getAverage(),
+             server.tps5.getAverage(),
+             server.tps15.getAverage()
+@@ -73,7 +74,7 @@ public class RAMDetails extends JList<String> {
          vector.add("Memory use: " + (data.getUsedMem() / 1024L / 1024L) + " mb (" + (data.getFree() * 100L / data.getMax()) + "% free)");
          vector.add("Heap: " + (data.getTotal() / 1024L / 1024L) + " / " + (data.getMax() / 1024L / 1024L) + " mb");
          vector.add("Avg tick: " + DECIMAL_FORMAT.format((double)this.server.getAverageTickTimeNanos() / (double) TimeUtil.NANOSECONDS_PER_MILLISECOND) + " ms");
@@ -18,7 +26,7 @@ index 039a86034928a5eb7aaa2d7ca76a7bddcca346bd..308f67d0616e2d6bb135258f1fda53cc
      }
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a4d7396a013515331297b2c548cfb23d9c2c1407..8c3712030d2421f014bf757dccc5cdfeeb1f9d23 100644
+index debc521eaa05c6befc6fe67f44780372b078039d..b2ce50799ff158ff2160b0d75404e52e34d54805 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -314,7 +314,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -29,8 +37,8 @@ index a4d7396a013515331297b2c548cfb23d9c2c1407..8c3712030d2421f014bf757dccc5cdfe
 +    public final double[] recentTps = new double[ 4 ]; // Purpur
      // Spigot end
      public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations; // Paper - add paper configuration files
-     public static long currentTickLong = 0L; // Paper - track current tick as a long
-@@ -1164,6 +1164,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
+@@ -1163,6 +1163,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      private static final long MAX_CATCHUP_BUFFER = TICK_TIME * TPS * 60L;
      private long lastTick = 0;
      private long catchupTime = 0;
@@ -38,7 +46,7 @@ index a4d7396a013515331297b2c548cfb23d9c2c1407..8c3712030d2421f014bf757dccc5cdfe
      public final RollingAverage tps1 = new RollingAverage(60);
      public final RollingAverage tps5 = new RollingAverage(60 * 5);
      public final RollingAverage tps15 = new RollingAverage(60 * 15);
-@@ -1278,14 +1279,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1284,14 +1285,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
                      final long diff = currentTime - tickSection;
                      final java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
@@ -74,10 +82,10 @@ index 096c89bd01cec2abd151bf6fffc4847d1bcd548f..cd0a8a6a1be75cab8bbb8ee3ac17bb73
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e08a0babeb4799ede4af696dd1a33d15eb7e2c75..5fdd11c1d7456f50828a6aed68125d6b248580e3 100644
+index 39112ee78ff7f55d9be109f4ad3dffb788f7380f..eb764777e7bb1c8f6300ae74726891d9df95107b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -3035,6 +3035,7 @@ public final class CraftServer implements Server {
+@@ -3034,6 +3034,7 @@ public final class CraftServer implements Server {
      @Override
      public double[] getTPS() {
          return new double[] {

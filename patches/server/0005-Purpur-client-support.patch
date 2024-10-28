@@ -5,7 +5,7 @@ Subject: [PATCH] Purpur client support
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 5980b70e2d7273239245237189b2debcbccfbac3..ce09c4900aee5a75c0d13a7bffd97a0711ead774 100644
+index c396580a9cfd86ff261bed439bb4662ae88010b5..2e45bc48c8a86d9522e4574bf3037611cfda63a3 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -302,6 +302,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
@@ -17,10 +17,10 @@ index 5980b70e2d7273239245237189b2debcbccfbac3..ce09c4900aee5a75c0d13a7bffd97a07
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index b43f87ff4b9853b5d4bbea5ff9686d64d9d0d26b..b66d4047b5e529f5f737efb0ff1edda805de1316 100644
+index 7174f8c89a7cdcf40ff28f6636ecfb23b13ccdaa..0b661bbfa4279cbb26c065c3ed4f2b9eb4342c4e 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -79,6 +79,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -84,6 +84,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      public final java.util.Map<java.util.UUID, net.kyori.adventure.resource.ResourcePackCallback> packCallbacks = new java.util.concurrent.ConcurrentHashMap<>(); // Paper - adventure resource pack callbacks
      private static final long KEEPALIVE_LIMIT = Long.getLong("paper.playerconnection.keepalive", 30) * 1000; // Paper - provide property to set keepalive limit
      protected static final ResourceLocation MINECRAFT_BRAND = ResourceLocation.withDefaultNamespace("brand"); // Paper - Brand support
@@ -28,7 +28,7 @@ index b43f87ff4b9853b5d4bbea5ff9686d64d9d0d26b..b66d4047b5e529f5f737efb0ff1edda8
  
      public ServerCommonPacketListenerImpl(MinecraftServer minecraftserver, Connection networkmanager, CommonListenerCookie commonlistenercookie, ServerPlayer player) { // CraftBukkit
          this.server = minecraftserver;
-@@ -171,6 +172,13 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -172,6 +173,13 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t register custom payload", ex);
                  this.disconnect(Component.literal("Invalid payload REGISTER!"), PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
              }
@@ -43,13 +43,13 @@ index b43f87ff4b9853b5d4bbea5ff9686d64d9d0d26b..b66d4047b5e529f5f737efb0ff1edda8
              try {
                  String channels = payload.toString(com.google.common.base.Charsets.UTF_8);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 992437a6e838f653f32d33b5b3f702c484640a97..c2e0baa40e556fd8bb2ae406b321da01f1d05079 100644
+index 42d7660efe5baa6f796f2a7606686c765b6f2478..9e7c447a786bde25bb7ebe58619700b4c2e3d05e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3554,4 +3554,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-         ((ca.spottedleaf.moonrise.patches.chunk_system.player.ChunkSystemServerPlayer)this.getHandle())
-             .moonrise$getViewDistanceHolder().setSendViewDistance(viewDistance);
+@@ -3568,4 +3568,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundEntityEventPacket(((CraftEntity) target).getHandle(), effect.getData()));
      }
+     // Paper end - entity effect API
 +
 +    // Purpur start
 +    @Override
